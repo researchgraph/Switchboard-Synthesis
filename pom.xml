@@ -75,11 +75,6 @@
       <version>${commons.io.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk</artifactId>
       <version>${aws-java-sdk.version}</version>

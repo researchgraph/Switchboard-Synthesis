@@ -1,4 +1,4 @@
-package org.rdswitchboard.utils.neo4j.sync;
+package org.rdswitchboard.utils.neo4j.sync.s3;
 
 import org.apache.commons.lang3.StringUtils;
 

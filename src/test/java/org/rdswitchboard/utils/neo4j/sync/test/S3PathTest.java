@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.rdswitchboard.utils.neo4j.sync.S3Path;
+import org.rdswitchboard.utils.neo4j.sync.s3.S3Path;
 
 public class S3PathTest {
 	

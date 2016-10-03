@@ -27,8 +27,6 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -41,6 +39,10 @@ import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
+import org.rdswitchboard.utils.neo4j.sync.enums.Relationships;
+import org.rdswitchboard.utils.neo4j.sync.enums.Types;
+import org.rdswitchboard.utils.neo4j.sync.exceptions.Neo4jException;
+import org.rdswitchboard.utils.neo4j.sync.s3.S3Path;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -62,21 +64,9 @@ public class App {
 //	private static final String DEF_NEO4J_DB = "neo4j";
 //	private static final String DEF_NEO4J_ZIP = "neo4j.zip";
 	
-	// meta-data types
-	private static final String TYPE_DATASET = "dataset";
-	private static final String TYPE_GRANT = "grant";
-	private static final String TYPE_RESEARCHER = "researcher";
-	private static final String TYPE_INSTITUTION = "institution";
-	private static final String TYPE_SERVICE = "service";
-	private static final String TYPE_PUBLICATION = "publication";
-	private static final String TYPE_PATTERN = "pattern";
-	private static final String TYPE_VERSION = "version";
-	
 	private static final String PROPERTY_KEY = "key";
 	private static final String PROPERTY_SOURCE = "node_source";
 	private static final String PROPERTY_TYPE = "node_type";
-	
-	private static final String RELATIONSHIP_LINKED_BY = "linkedBySynthesis";
 		
 	private static GraphDatabaseService srcGraphDb;
 	private static GraphDatabaseService dstGraphDb;
@@ -85,14 +75,7 @@ public class App {
 	private static Set<String> keys; 
 	private static AmazonS3 s3client;
 	private static Map<Long, Long> mapImported;
-			
-	private static final Label labelDataset = DynamicLabel.label(TYPE_DATASET);
-	private static final Label labelGrant = DynamicLabel.label(TYPE_GRANT);
-	private static final Label labelResearcher = DynamicLabel.label(TYPE_RESEARCHER);
-	private static final Label labelPublication = DynamicLabel.label(TYPE_PUBLICATION);
-	
-	private static final RelationshipType relLinkedBy = DynamicRelationshipType.withName(RELATIONSHIP_LINKED_BY);
-	
+				
 	private static int syncLevel;
 	private static long processedCounter = 0;
 	private static long nodeCounter = 0;
@@ -100,8 +83,8 @@ public class App {
 	private static long chunksCounter = 0;
 	private static long chunkSize = 0;
 	
-	public static final String NEO4J_CONF = "/conf/neo4j.properties";
-	public static final String NEO4J_DB = "/data/graph.db";
+	public static final String NEO4J_CONF = "/conf/neo4j.conf";
+	public static final String NEO4J_DB = "/data/databases/graph.db";
 	
 	public static File GetDbPath(final String folder) throws Neo4jException, IOException
 	{
@@ -176,7 +159,7 @@ public class App {
 	    });
 	}
 
-	@SuppressWarnings("deprecation")
+
 	public static void main(String[] args) {
 		try {
 			Properties properties = Configuration.fromArgs(args);
@@ -222,7 +205,7 @@ public class App {
 						keys.add(s); 
 				}
 			}
-		    
+
 			
 			mapImported = new HashMap<Long, Long>();
 						
@@ -262,21 +245,19 @@ public class App {
 
 	        System.out.println("Create global operation's driver");
 			
-			Set<String> types = new HashSet<String>();
-			types.add(TYPE_DATASET);
-			types.add(TYPE_GRANT);
-			types.add(TYPE_RESEARCHER);
-			types.add(TYPE_PUBLICATION);
+			Set<Label> types = new HashSet<Label>();
+			types.add(Types.dataset);
+			types.add(Types.grant);
+			types.add(Types.researcher);
+			types.add(Types.publication);
 			
 			System.out.println("Create indexes in Nexus database");
 	        try ( Transaction tx = srcGraphDb.beginTx() ) {
 	        	Schema schema = srcGraphDb.schema();
 
-        		for (String type : types) {
-        			Label label = DynamicLabel.label(type);
-        			
+        		for (Label type : types) {
         			for (String key : keys) 
-        				createIndex(schema, label, key);
+        				createIndex(schema, type, key);
         		}
 	        		
 	        	tx.success();
@@ -286,8 +267,9 @@ public class App {
 	        try ( Transaction tx = dstGraphDb.beginTx() ) {
 	        	Schema schema = dstGraphDb.schema();
 	        	
-	        	for (String type : types) 
-	        		createConstraint(schema, DynamicLabel.label(type), PROPERTY_KEY);
+	        	for (Label type : types) {
+	        		createConstraint(schema, type, PROPERTY_KEY);
+	        	}
 	        	
 	        	tx.success();
 	        }
@@ -298,9 +280,9 @@ public class App {
 	        	try {
 	        		
 	        		System.out.println("Sync nodes");
-		        	for (Node srcNode : srcGraphDb.getAllNodes()) {
+		        	for (Node dstNode : dstGraphDb.getAllNodes()) {
 		        		
-		        		syncNode(srcNode);
+		        		syncNode(dstNode);
 		        
 		        		if (chunkSize > 1000) {
         					
@@ -460,7 +442,7 @@ public class App {
 		String srcType = (String) srcNode.getProperty(PROPERTY_TYPE);
 		
 		// Convert type to a proper node label
-		Label type = DynamicLabel.label(srcType);
+		Label type = Label.label(srcType);
 		
 		// let try find same node in the dst database
 		Node dstNode = dstGraphDb.findNode(type, PROPERTY_KEY, srcKey);
@@ -529,7 +511,7 @@ public class App {
 				Node cpyNode = copyNode(srcNode);
 				
 				// create relationships
-				createRelationship(dstNode, cpyNode, relLinkedBy);
+				createRelationship(dstNode, cpyNode, Relationships.linkedBySynthesis);
 								
 				//System.out.println("Done");
 			}
@@ -551,14 +533,14 @@ public class App {
 		
 		// the type must be either datatase, grant, researcher or publication
 		Label labelType;
-		if (type.equals(TYPE_DATASET))
-			labelType = labelDataset;
-		else if (type.equals(TYPE_GRANT))
-			labelType = labelGrant;
-		else if (type.equals(TYPE_RESEARCHER))
-			labelType = labelResearcher;
-		else if (type.equals(TYPE_PUBLICATION))
-			labelType = labelPublication;
+		if (type.equals(Types.dataset.name()))
+			labelType = Types.dataset;
+		else if (type.equals(Types.grant.name()))
+			labelType = Types.grant;
+		else if (type.equals(Types.researcher.name()))
+			labelType = Types.researcher;
+		else if (type.equals(Types.publication.name()))
+			labelType = Types.publication;
 		else
 			return;
 		

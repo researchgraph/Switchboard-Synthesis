@@ -536,10 +536,10 @@ public class App {
 		// Node healty check
 
 		// a simple check to see if node has a key, source and type
-//		if (!dstNode.hasProperty(PROPERTY_KEY) ||
-//			!dstNode.hasProperty(PROPERTY_NODE_SOURCE) ||
-//			!dstNode.hasProperty(PROPERTY_NODE_TYPE))
-//			return;
+		if (!dstNode.hasProperty(PROPERTY_KEY) ||
+			!dstNode.hasProperty(PROPERTY_SOURCE) ||
+			!dstNode.hasProperty(PROPERTY_TYPE))
+			return;
 
 
 		// extract node type. The node must have one string type

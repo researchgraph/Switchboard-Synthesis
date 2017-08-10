@@ -210,6 +210,11 @@ public class App {
 				}
 			}
 
+			for (String k:keys)
+            {
+                System.out.println("Key: " + k );
+            }
+
 			
 			mapImported = new HashMap<Long, Long>();
 						

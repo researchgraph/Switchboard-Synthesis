@@ -101,6 +101,7 @@ public class App {
 	public static File GetConfPath(final String folder) throws Neo4jException
 	{
 		File conf = new File(folder, NEO4J_CONF);
+		System.out.println("Conf: " + conf.toString());
 		if (!conf.exists() || conf.isDirectory())
 			throw new Neo4jException("The " + folder + " folder is not valid Neo4j instance. Please provide path to an existing Neo4j instance");
 		

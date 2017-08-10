@@ -492,18 +492,20 @@ public class App {
 	}
 	
 	private static void matchNode(Node dstNode, Label labelType, String property, Object value) {
-//		System.out.println("Searching for " + property + " = " + value);
+		System.out.println("Searching for " + property + " = " + value);
 		
 		// At this point the sync will only match nodes of the same type. 
 		// This will require source nodes to have correct type or sync program will not work
 		ResourceIterator<Node> nodes = srcGraphDb.findNodes(labelType, property, value);
+
 		if (null != nodes)
+            System.out.println("nodes are not null" );
 			while (nodes.hasNext()) {
 				Node srcNode = nodes.next();
 				
 				mapImported.put(srcNode.getId(), dstNode.getId());
 
-				//System.out.println("Match found with id : " + srcNode.getId());
+				System.out.println("Match found with id : " + srcNode.getId());
 
 				// DK Disabled the creation of knownAs relationsip
 				// to enable, comment map adding above and uncomment the rest
@@ -527,14 +529,10 @@ public class App {
 			!dstNode.hasProperty(PROPERTY_TYPE))
 			return;
 
-        System.out.println("Passed the test for " + PROPERTY_KEY + "," + PROPERTY_SOURCE + "," + PROPERTY_TYPE);
-
 		// extract node type. The node must have one string type
 		Object type = dstNode.getProperty(PROPERTY_TYPE);
 		if (type == null || !(type instanceof String))
 			return;
-
-        System.out.println("Passed the test for type:" + type.toString()  );
 
 		// the type must be either datatase, grant, researcher or publication
 		Label labelType;

@@ -543,7 +543,7 @@ public class App {
 
 
 		// extract node type. The node must have one string type
-		Object type = dstNode.getProperty(PROPERTY_NODE_TYPE);
+		Object type = dstNode.getProperty(PROPERTY_TYPE);
 		if (type == null || !(type instanceof String))
 			return;
 

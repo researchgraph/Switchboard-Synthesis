@@ -504,14 +504,13 @@ public class App {
 	}
 	
 	private static void matchNode(Node dstNode, Label labelType, String property, Object value) {
-		System.out.println("Searching for " + property + " = " + value);
+		System.out.println("Searching for label:" + labelType + " | " + property + " = " + value);
 		
 		// At this point the sync will only match nodes of the same type. 
 		// This will require source nodes to have correct type or sync program will not work
 		ResourceIterator<Node> nodes = srcGraphDb.findNodes(labelType, property, value);
 
 		if (null != nodes)
-            System.out.println("nodes are not null" );
 			while (nodes.hasNext()) {
 				Node srcNode = nodes.next();
 				
@@ -561,8 +560,6 @@ public class App {
 			return;
 		
 		++processedCounter;
-		
-		//System.out.println("Node id: " + dstNode.getId());
 		
 		// check if node has one of property required for syncing 
 		for (String property : keys) {

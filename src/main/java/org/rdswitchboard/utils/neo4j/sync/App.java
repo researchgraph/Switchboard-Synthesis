@@ -193,10 +193,13 @@ public class App {
 	        syncLevel = Integer.parseInt(properties.getProperty(Configuration.PROPERTY_SYNC_LEVEL, DEF_SYNC_LEVEL));
 	        
 	        String keysList = properties.getProperty(Configuration.PROPERTY_SYNC_KEYS, DEF_KEYS_LIST);
+	        System.out.println("KeyList:" + keysList );
+
+            if (keysList==null || keysList.isEmpty())
+                throw new IllegalArgumentException("sync.keys can not be empty");
 
 	        keys = new HashSet<String>();
-	        keys.add(PROPERTY_KEY);
-	        
+
 	        File keysFile = new File(keysList);
 			if (keysFile.isFile()) {
 				List<String> list = FileUtils.readLines(keysFile);

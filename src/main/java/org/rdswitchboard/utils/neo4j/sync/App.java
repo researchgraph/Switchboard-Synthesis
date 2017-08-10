@@ -65,9 +65,11 @@ public class App {
 //	private static final String DEF_NEO4J_ZIP = "neo4j.zip";
 	
 	private static final String PROPERTY_KEY = "key";
-	private static final String PROPERTY_SOURCE = "node_source";
-	private static final String PROPERTY_TYPE = "node_type";
-		
+	private static final String PROPERTY_NODE_SOURCE = "node_source";
+	private static final String PROPERTY_NODE_TYPE = "node_type";
+    private static final String PROPERTY_SOURCE = "source";
+    private static final String PROPERTY_TYPE = "type";
+
 	private static GraphDatabaseService srcGraphDb;
 	private static GraphDatabaseService dstGraphDb;
 	
@@ -211,7 +213,7 @@ public class App {
 			}
 
             System.out.println("List of keys");
-			if (keys.isEmpty()) throw new IllegalArgumentException("no keys are in the list!");
+			if (keys.isEmpty()) throw new IllegalArgumentException("There is no keys in " + keysList );
 			for (String k:keys)
             {
                 System.out.println("Key: " + k );
@@ -450,7 +452,7 @@ public class App {
 		// We are in the RDS ecosystem now, therefore all keys must be strings, 
 		// all types must be valid and no additional checks should be required
 		String srcKey = (String) srcNode.getProperty(PROPERTY_KEY);
-		String srcType = (String) srcNode.getProperty(PROPERTY_TYPE);
+		String srcType = (String) srcNode.getProperty(PROPERTY_NODE_TYPE);
 		
 		// Convert type to a proper node label
 		Label type = Label.label(srcType);
@@ -531,16 +533,17 @@ public class App {
 	}
 	
 	private static void syncNode(Node dstNode) throws Exception {
-		// Node healty check 
-		
+		// Node healty check
+
 		// a simple check to see if node has a key, source and type
-		if (!dstNode.hasProperty(PROPERTY_KEY) || 
-			!dstNode.hasProperty(PROPERTY_SOURCE) ||
-			!dstNode.hasProperty(PROPERTY_TYPE))
-			return;
+//		if (!dstNode.hasProperty(PROPERTY_KEY) ||
+//			!dstNode.hasProperty(PROPERTY_NODE_SOURCE) ||
+//			!dstNode.hasProperty(PROPERTY_NODE_TYPE))
+//			return;
+
 
 		// extract node type. The node must have one string type
-		Object type = dstNode.getProperty(PROPERTY_TYPE);
+		Object type = dstNode.getProperty(PROPERTY_NODE_TYPE);
 		if (type == null || !(type instanceof String))
 			return;
 

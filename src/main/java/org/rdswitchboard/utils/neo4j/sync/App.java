@@ -210,6 +210,8 @@ public class App {
 				}
 			}
 
+            System.out.println("List of keys");
+			if (keys.isEmpty()) throw new IllegalArgumentException("no keys are in the list!");
 			for (String k:keys)
             {
                 System.out.println("Key: " + k );

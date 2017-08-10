@@ -282,7 +282,9 @@ public class App {
 	        		
 	        		System.out.println("Sync nodes");
 		        	for (Node dstNode : dstGraphDb.getAllNodes()) {
-		        		
+
+		        	    System.out.println("NodeID: " + dstNode.getId());
+
 		        		syncNode(dstNode);
 		        
 		        		if (chunkSize > 1000) {

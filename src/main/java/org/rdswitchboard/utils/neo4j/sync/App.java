@@ -730,7 +730,7 @@ public class App {
 				throw new IllegalArgumentException("Only Zip archives are supported for S3");
 		} else {
 			Path local = Paths.get(from);
-            System.out.println("Local: " + local.toString();
+            System.out.println("Local: " + local.toString());
 			if (null == local || !Files.exists(local))
 				throw new IllegalArgumentException("The local path is null or no file exists: " + local.toString());
 			if (Files.isDirectory(local))

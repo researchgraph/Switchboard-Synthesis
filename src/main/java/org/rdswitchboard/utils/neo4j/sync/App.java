@@ -283,8 +283,6 @@ public class App {
 	        		System.out.println("Sync nodes");
 		        	for (Node dstNode : dstGraphDb.getAllNodes()) {
 
-		        	    System.out.println("NodeID: " + dstNode.getId());
-
 		        		syncNode(dstNode);
 		        
 		        		if (chunkSize > 1000) {
@@ -528,12 +526,16 @@ public class App {
 			!dstNode.hasProperty(PROPERTY_SOURCE) ||
 			!dstNode.hasProperty(PROPERTY_TYPE))
 			return;
-		
+
+        System.out.println("Passed the test for " + PROPERTY_KEY + "," + PROPERTY_SOURCE + "," + PROPERTY_TYPE);
+
 		// extract node type. The node must have one string type
 		Object type = dstNode.getProperty(PROPERTY_TYPE);
 		if (type == null || !(type instanceof String))
 			return;
-		
+
+        System.out.println("Passed the test for type:" + type.toString()  );
+
 		// the type must be either datatase, grant, researcher or publication
 		Label labelType;
 		if (type.equals(Types.dataset.name()))

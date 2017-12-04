@@ -1,0 +1,7 @@
+:START_ID,:END_ID,:TYPE
+"researchgraph.org/group1/publication_0001","researchgraph.org/group1/researcher_1111","relatedTo"
+"researchgraph.org/group1/publication_0002","researchgraph.org/group1/researcher_1111","relatedTo"
+"researchgraph.org/group1/publication_0003","researchgraph.org/group1/researcher_1111","relatedTo"
+"researchgraph.org/group1/publication_0002","researchgraph.org/group1/researcher_2222","relatedTo"
+"researchgraph.org/group1/publication_0003","researchgraph.org/group1/researcher_2222","relatedTo"
+"researchgraph.org/group1/publication_0003","researchgraph.org/group1/researcher_3333","relatedTo"

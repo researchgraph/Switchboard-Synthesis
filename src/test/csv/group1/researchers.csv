@@ -1,0 +1,4 @@
+key:ID,source,local_id,last_updated,full_name,orcid,type,:LABEL
+"researchgraph.org/group1/researcher_1111","group1.researchgraph.org","researcher_1111","1/06/2016","Snorre Tzvia","0000-0001-1111-1111",researcher,researcher;group1
+"researchgraph.org/group1/researcher_2222","group1.researchgraph.org","researcher_2222","2/06/2016","Scaevola Thersa","0000-0001-1111-2222",researcher,researcher;group1
+"researchgraph.org/group1/researcher_3333","group1.researchgraph.org","researcher_3333","3/06/2016","Séverin Sibylle","0000-0001-1111-3333",researcher,researcher;group1

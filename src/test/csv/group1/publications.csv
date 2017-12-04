@@ -1,0 +1,4 @@
+key:ID,source,local_id,title,author_list,last_updated,publication_year,doi,type,:LABEL
+researchgraph.org/group1/publication_0001,group1.researchgraph.org,publication_0001,"Publication 0001","Snorre Tzvia","30/06/2016","2016","10.987/88888888",publication,publication;group1
+researchgraph.org/group1/publication_0002,group1.researchgraph.org,publication_0002,"Publication 0002","Snorre Tzvia, Scaevola Thersa","30/06/2017","2017","10.987/999999999",publication,publication;group1
+researchgraph.org/group1/publication_0003,group1.researchgraph.org,publication_0003,"Publication 0003","Snorre Tzvia, Scaevola Thersa, Séverin Sibylle","30/10/2017","2017","10.987/999999987",publication,publication;group1

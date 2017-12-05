@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 rm -rf ./A
 rm -rf ./B
-unzip R.Neo4j.zip -d ./A
+unzip R-Neo4j.zip -d ./A
 cp -R ./A ./B
 
 #./A/R.Neo4j/bin/neo4j-import --into ./A/R.Neo4j/data/databases/graph.db \

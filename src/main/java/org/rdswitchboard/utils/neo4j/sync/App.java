@@ -76,15 +76,12 @@ public class App {
 	        String bucket = properties.getProperty(Configuration.PROPERTY_SYNC_BUCKET);
 	        
 	        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	        String drop = "neo4j-enriched-" + dateFormat.format(new Date());
+	        String drop = "neo4j-augmented-" + dateFormat.format(new Date());
 
-	        if (!StringUtils.isEmpty(bucket))
-	        	System.out.println("Output Neo4j: s3://" + bucket + "/" + drop + ".zip");
+            int syncLevel = Integer.parseInt(properties.getProperty(Configuration.PROPERTY_SYNC_LEVEL, DEF_SYNC_LEVEL));
 
-	        int syncLevel = Integer.parseInt(properties.getProperty(Configuration.PROPERTY_SYNC_LEVEL, DEF_SYNC_LEVEL));
-	        
-	        String keysList = properties.getProperty(Configuration.PROPERTY_SYNC_KEYS, DEF_KEYS_LIST);
-	        System.out.println("KeyList:" + keysList );
+            String keysList = properties.getProperty(Configuration.PROPERTY_SYNC_KEYS, DEF_KEYS_LIST);
+            System.out.println("KeyList:" + keysList );
 
             if (keysList==null || keysList.isEmpty())
                 throw new IllegalArgumentException("sync.keys can not be empty");
@@ -108,34 +105,47 @@ public class App {
                 System.out.println("Key: " + k );
             }
 
-						
-	        s3client = new AmazonS3Client(new InstanceProfileCredentialsProvider());
+            Path home = Paths.get(syncHome);
+            Files.createDirectories(home);
+            work = Files.createTempDirectory(home, DEF_SYNC_PREFIX);
 
-	        Path home = Paths.get(syncHome);
-	        Files.createDirectories(home);
-	        work = Files.createTempDirectory(home, DEF_SYNC_PREFIX);
-	        
-	        Path sourceDb = getPath(DEF_SOURCE_DB);
-	        Path targetDb = getPath(DEF_TARGET_DB);
-	        
-	        System.out.println("Install Nexus database");
-	        downloadDatabase(source, sourceDb);
-	        
-	        System.out.println("Install Input database");
-	        downloadDatabase(target, targetDb);
+            Path sourceDb;
+            Path targetDb;
+
+            if (!StringUtils.isEmpty(bucket)) {
+                System.out.println("Output Neo4j: s3://" + bucket + "/" + drop + ".zip");
+
+                s3client = new AmazonS3Client(new InstanceProfileCredentialsProvider());
+
+                sourceDb = getPath(DEF_SOURCE_DB);
+                targetDb = getPath(DEF_TARGET_DB);
+
+                System.out.println("Install Nexus database");
+                downloadDatabase(source, sourceDb);
+
+                System.out.println("Install Input database");
+                downloadDatabase(target, targetDb);
+
+            }else{
+
+                sourceDb = Paths.get(source);
+                targetDb = Paths.get(target);
+
+            }
 
             Process.synthesis(sourceDb, targetDb, keys, syncLevel);
-	        
-	        System.out.println("Archive database");
-	        
-	        Path zipFile = getPath(drop + ".zip");
-	        zipFile(zipFile, targetDb, drop);
-	        
-	        System.out.println("Publish database");
-	        
-	        if (!StringUtils.isEmpty(bucket))
-	        	uploadDatabase(zipFile, bucket);
-	              
+
+            if (!StringUtils.isEmpty(bucket)) {
+                System.out.println("Archive database");
+
+                Path zipFile = getPath(drop + ".zip");
+                zipFile(zipFile, targetDb, drop);
+
+                System.out.println("Publish database");
+
+                if (!StringUtils.isEmpty(bucket))
+                    uploadDatabase(zipFile, bucket);
+            }
 	        
 		} catch (Exception e) {
 			e.printStackTrace();

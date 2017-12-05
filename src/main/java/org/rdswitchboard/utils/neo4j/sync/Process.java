@@ -400,7 +400,7 @@ public class Process {
                 Node cpyNode = copyNode(srcNode);
 
                 // create relationships
-                createRelationship(dstNode, cpyNode, Relationships.linkedByResearchGraph);
+                createRelationship(dstNode, cpyNode, Relationships.ResearchGraph);
 
                 //System.out.println("Done");
             }

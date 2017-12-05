@@ -17,8 +17,8 @@ public class SynthesisTest {
         Path target = Paths.get("/Users/Admin/git/researchgraph/Synthesis/src/test/B/R.Neo4j");
         Set<String> keys = new HashSet<>();
         keys.add("doi");
-       // keys.add("orcid");
-        int syncLevel =1;
+        keys.add("orcid");
+        int syncLevel =3;
 
         try {
             org.rdswitchboard.utils.neo4j.sync.Process.synthesis(source, target, keys, syncLevel);

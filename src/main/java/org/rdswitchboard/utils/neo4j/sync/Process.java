@@ -391,8 +391,6 @@ public class Process {
             while (nodes.hasNext()) {
                 Node srcNode = nodes.next();
 
-                mapImported.put(srcNode.getId(), dstNode.getId());
-
                 System.out.println("Match found with id : " + srcNode.getId());
 
                 // DK Disabled the creation of knownAs relationsip

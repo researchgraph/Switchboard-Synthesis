@@ -1,5 +1,6 @@
 package org.rdswitchboard.utils.neo4j.sync;
 
+import org.joda.time.DateTime;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -302,9 +303,21 @@ public class Process {
             for (String p : srcNode.getPropertyKeys())
                 dstNode.setProperty(p, srcNode.getProperty(p));
 
+            // add a new label for augmented date and time
+                dstNode.setProperty("augmented_at", DateTime.now().toString());
+
             // copy all node labels
             for (Label l : srcNode.getLabels())
                 dstNode.addLabel(l);
+
+            //add researchgraph label to show the node is added to the neo4j by ResearchGraph services
+                dstNode.addLabel(new Label() {
+                    @Override
+                    public String name() {
+                        return "researchgraph";
+                    }
+                });
+
 
             // increase nodes count
             ++nodeCounter;

@@ -13,8 +13,8 @@ public class SynthesisTest {
     @Test
     public void testSynthesis() {
 
-        Path source = Paths.get("/Users/Admin/git/researchgraph/Synthesis/src/test/A/R-Neo4j");
-        Path target = Paths.get("/Users/Admin/git/researchgraph/Synthesis/src/test/B/R-Neo4j");
+        Path source = Paths.get("/Users/Admin/Downloads/ORCID/R.Neo4j");
+        Path target = Paths.get("/Users/Admin/Downloads/gesis/R.Neo4j");
         Set<String> keys = new HashSet<>();
         keys.add("doi");
         keys.add("orcid");

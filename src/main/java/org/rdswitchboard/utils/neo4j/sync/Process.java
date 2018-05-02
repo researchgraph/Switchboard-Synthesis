@@ -47,6 +47,39 @@ public class Process {
     private static GraphDatabaseService srcGraphDb;
     private static GraphDatabaseService dstGraphDb;
 
+    private static void printStatistics(GraphDatabaseService graphDB) throws Exception{
+        Result result;
+
+        System.out.println("Number of nodes/type:");
+        result =graphDB.execute("Match (n) return n.type as TYPE, count(n) as COUNT");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Number of nodes with DOI/type:");
+        result =graphDB.execute("Match (n) where exists(n.doi) return n.type as TYPE, count(n) as COUNT");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Number of unique DOI/type:");
+        result =graphDB.execute("Match (n) return n.type as TYPE, count(distinct(n.doi)) as COUNT");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Sample of DOI:");
+        result =graphDB.execute("Match (n) where exists(n.doi) return n.doi limit 10");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Number of nodes with ORCID/type:");
+        result =graphDB.execute("Match (n) where exists(n.orcid) return n.type as TYPE, count(n) as ORCID");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Sample of unique ORCID/type:");
+        result =graphDB.execute("Match (n) return n.type as TYPE, count(distinct(n.orcid)) as COUNT");
+        System.out.println(result.resultAsString());
+
+        System.out.println("Sample of ORCID:");
+        result =graphDB.execute("Match (n) where exists(n.orcid) return n.orcid limit 10");
+        System.out.println(result.resultAsString());
+
+
+    }
     public static void synthesis(Path sourceDb, Path targetDb, Set<String> keys, int syncLevel) throws Exception {
 
         mapImported = new HashMap<Long, Long>();
@@ -60,6 +93,8 @@ public class Process {
 
         registerShutdownHook( srcGraphDb );
 
+        printStatistics(srcGraphDb);
+
         System.out.println("Connecting to Input database");
 
         dstGraphDb = new GraphDatabaseFactory()
@@ -69,6 +104,8 @@ public class Process {
                 .newGraphDatabase();
 
         registerShutdownHook( dstGraphDb );
+
+        printStatistics(dstGraphDb);
 
         System.out.println("Create global operation's driver");
 
@@ -310,11 +347,11 @@ public class Process {
             for (Label l : srcNode.getLabels())
                 dstNode.addLabel(l);
 
-            //add researchgraph label to show the node is added to the neo4j by ResearchGraph services
+            //add researchgraph label to show the node is added to the neo4j by Research Graph Augment Services
                 dstNode.addLabel(new Label() {
                     @Override
                     public String name() {
-                        return "researchgraph";
+                        return "researchgraph.org";
                     }
                 });
 
@@ -354,8 +391,9 @@ public class Process {
         // a simple check to see if node has a key, source and type
         if (!dstNode.hasProperty(PROPERTY_KEY) ||
                 !dstNode.hasProperty(PROPERTY_SOURCE) ||
-                !dstNode.hasProperty(PROPERTY_TYPE))
-            return;
+                !dstNode.hasProperty(PROPERTY_TYPE)){
+            System.out.println("Warning: node ID(" + dstNode.getId() + ") is missing key, source or type!" );
+            return;}
 
 
         // extract node type. The node must have one string type
@@ -413,7 +451,7 @@ public class Process {
                 Node cpyNode = copyNode(srcNode);
 
                 // create relationships
-                createRelationship(dstNode, cpyNode, Relationships.ResearchGraph);
+                createRelationship(dstNode, cpyNode, Relationships.augment);
 
                 //System.out.println("Done");
             }

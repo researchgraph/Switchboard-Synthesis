@@ -351,7 +351,7 @@ public class Process {
                 dstNode.addLabel(new Label() {
                     @Override
                     public String name() {
-                        return "researchgraph.org";
+                        return "researchgraph";
                     }
                 });
 
